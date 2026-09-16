@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Spendenaktion: Musikanlage 🎧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- PayPal SDK Einbindung -->
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAdCz2QlzpsGWtuvvOLCTY0xRFNIJLRJmEZjo3q1xYXsljwG2_SUr1bp2CRq45Yn_KgVvLF9h7yrm2JRw&currency=EUR"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(23, 32, 54, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-glow: #60a5fa;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+      margin: auto 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .icon-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      font-size: 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .current-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .target-val {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      height: 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 2px;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      border-radius: 20px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+    }
+
+    .progress-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .btn-preset {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      padding: 12px 0;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0 14px;
+      margin-bottom: 16px;
+    }
+
+    .input-wrapper label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .input-wrapper input {
+      width: 80px;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: right;
+      padding: 12px 0;
+      outline: none;
+    }
+
+    #paypal-button-container {
+      margin-top: 10px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.85rem;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      font-weight: 700;
+      color: var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="header">
+      <div class="icon-badge">🔊</div>
+      <h1>Projekt: Musikanlage</h1>
+      <p class="subtitle">Hilf mit, das Sound-Setup zu vervollständigen!</p>
+    </div>
+
+    <!-- Fortschritts-Anzeige -->
+    <div class="card">
+      <div class="stats-header">
+        <div>
+          <div class="target-val">Gesammelt</div>
+          <div class="current-val"><span id="current-amount">55,00</span> €</div>
+        </div>
+        <div class="target-val" style="text-align: right;">Ziel: <strong>760,00 €</strong></div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div class="progress-footer">
+        <span id="progress-percent">0% erreicht</span>
+        <span>Fehlen: <span id="remaining-amount">705,00</span> €</span>
+      </div>
+    </div>
+
+    <!-- Spenden-Eingabe & PayPal Button -->
+    <div class="card">
+      <div class="section-title">💙 Spendenbetrag wählen</div>
+      
+      <div class="presets-grid">
+        <button class="btn-preset" onclick="setAmount(5)">5 €</button>
+        <button class="btn-preset" onclick="setAmount(10)">10 €</button>
+        <button class="btn-preset" onclick="setAmount(20)">20 €</button>
+        <button class="btn-preset" onclick="setAmount(50)">50 €</button>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="amount-input">Wunschbetrag (€)</label>
+        <input type="number" id="amount-input" value="10" min="1" step="any">
+      </div>
+
+      <!-- Hier rendert PayPal das echte Bezahlen-Feld -->
+      <div id="paypal-button-container"></div>
+    </div>
+
+    <!-- Einkaufsliste -->
+    <div class="card">
+      <div class="section-title">🛒 Einkaufskorb</div>
+      <div class="item-row"><span>2× dB Technologies B-Hype 8</span><span>318,00 €</span></div>
+      <div class="item-row"><span>1× MUSIC STORE Go! Sub 15A</span><span>219,00 €</span></div>
+      <div class="item-row"><span>1× Soundcraft Notepad 8FX</span><span>133,40 €</span></div>
+      <div class="item-row"><span>1× Boxenstativ Alu (Paar)</span><span>33,90 €</span></div>
+      <div class="item-row"><span>1× Fame MS 58 MKII Mikrofon</span><span>25,50 €</span></div>
+      <div class="item-row"><span>4× Mikrofonkabel 6m</span><span>23,60 €</span></div>
+      <div class="item-row"><span>1× Mikrofonkabel 2,5m</span><span>5,20 €</span></div>
+      <div class="total-row">
+        <span>Gesamtpreis Set</span>
+        <span>758,60 €</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const targetAmount = 760;
+    let currentAmount = parseFloat(localStorage.getItem('savedAmount')) || 55;
+
+    function updateUI() {
+      let percent = (currentAmount / targetAmount) * 100;
+      if (percent > 100) percent = 100;
+      
+      let remaining = targetAmount - currentAmount;
+      if (remaining < 0) remaining = 0;
+
+      document.getElementById('current-amount').innerText = currentAmount.toFixed(2).replace('.', ',');
+      document.getElementById('remaining-amount').innerText = remaining.toFixed(2).replace('.', ',');
+      document.getElementById('progress-percent').innerText = percent.toFixed(1).replace('.', ',') + '% erreicht';
+      document.getElementById('progress-fill').style.width = percent + '%';
+
+      localStorage.setItem('savedAmount', currentAmount);
+    }
+
+    function setAmount(val) {
+      document.getElementById('amount-input').value = val;
+    }
+
+    // Official PayPal Button Logic
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color:  'blue',
+        shape:  'rect',
+        label:  'paypal'
+      },
+      createOrder: function(data, actions) {
+        const val = parseFloat(document.getElementById('amount-input').value) || 10;
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: val.toFixed(2)
+            }
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          // Zahlung war erfogreich!
+          const paidVal = parseFloat(details.purchase_units[0].amount.value);
+          
+          currentAmount += paidVal;
+          updateUI();
+          
+          alert('Vielen Dank für deine Spende von ' + paidVal + ' €!');
+        });
+      }
+    }).render('#paypal-button-container');
+
+    updateUI();
+  </script>
+
+</body>
+</html>
